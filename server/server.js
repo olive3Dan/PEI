@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Start server
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
 });
@@ -24,7 +24,7 @@ const pool = new Pool({
   user: 'postgres',
   host: 'database',
   database: 'geo_data',
-  password: 'olive3Dan@pg',
+  password: 'password',
   port: '5432',
 });
 
@@ -61,7 +61,7 @@ app.post("/add_point", async (req, res) => {
     );
     console.log(result.rows[0]);
     res.status(201).json(result.rows[0]);
-    
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });

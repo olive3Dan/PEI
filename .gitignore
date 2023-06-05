@@ -1,0 +1,26 @@
+**/.cache
+**/dist
+**/node_modules
+*.tgz
+.DS_Store
+tsc-build
+.phraseapp.yml
+/package-lock.json
+/showroom/app
+
+### Code ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+.idea/*
+
+.npmrc
+.env
+environment.properties
+**/.env/*
+!**/.env/template
+
+frontend/coverage

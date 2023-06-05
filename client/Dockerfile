@@ -1,20 +1,19 @@
-# Use a base image with Node.js pre-installed
-FROM node:14
+FROM node:current-alpine as client-dependecies
 
-# Set the working directory inside the container
-WORKDIR /app
+WORKDIR /usr/client
 
-# Copy package.json and package-lock.json/yarn.lock to the working directory
-COPY package*.json ./
+COPY client/package*.json ./
+COPY client/index.html ./
+COPY client/main.js ./
+COPY client/style.css ./
+COPY client/vite.config.js ./
 
-# Install project dependencies
-RUN npm install --production
+RUN ["npm", "i", "production"]
 
-# Copy the entire project directory to the working directory
-COPY . .
+FROM node:current-alpine as build-and-run
 
-# Expose port 3000
-EXPOSE 3000
+COPY --from=client-dependecies /usr/client ./usr/client
 
-# Start the website using the "npm run start" command
+WORKDIR /usr/client
+
 CMD ["npm", "run", "start"]

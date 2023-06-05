@@ -6,7 +6,7 @@ To get started, run the following (requires Node 14+):
 
     npx create-ol-app my-app --template vite
 
-Then change into your new `my-app` directory and start a development server (available at http://localhost:5173):
+    Then change into your new `my-app` directory and start a development server (available at http://localhost:5173):
 
     cd my-app
     npm start

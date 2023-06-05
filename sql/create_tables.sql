@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS points (id serial primary key, name varchar(64),  coordinates geography);

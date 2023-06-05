@@ -1,28 +1,64 @@
-version: '3'
+version: "3.9"
+
+volumes:
+  local_data:
+  pgadmin-data:
+
+networks:
+  geo:
+    name: geo
+
 services:
   database:
-    image: postgres:latest
-    ports:
-      - 5432:5432
+    container_name: database
+    image: postgis/postgis
+    volumes:
+      - local_data:/var/lib/postgresql/data
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: olive3Dan@pg
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: geo_data
-    volumes:
-      - ./database:/var/lib/postgresql/data
-  server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
     ports:
-      - 5000:5000
+      - "5433:5432"
+    networks:
+      - geo
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: daniel@test.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
     depends_on:
       - database
-  client:
+    networks:
+      - geo
+  server:
+    container_name: server
     build:
-      context: ./client
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: server/Dockerfile
+    environment:
+      - PORT=3000
     ports:
-      - 3000:3000
+      - "3000:3000"
+    depends_on:
+      - database
+    networks:
+      - geo
+  client:
+    container_name: client
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    ports:
+      - "8080:8000"
     depends_on:
       - server
+    networks:
+      - geo

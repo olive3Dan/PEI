@@ -3,13 +3,13 @@ import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
-import Point from 'ol/geom/Point'; 
-import Feature from 'ol/Feature'; 
-import { Vector as VectorLayer } from 'ol/layer'; 
-import { Vector as VectorSource } from 'ol/source'; 
+import Point from 'ol/geom/Point';
+import Feature from 'ol/Feature';
+import { Vector as VectorLayer } from 'ol/layer';
+import { Vector as VectorSource } from 'ol/source';
 import {Icon, Style, Text, Fill, Stroke} from 'ol/style';
 import {fromLonLat, toLonLat} from 'ol/proj';
-import {Select, defaults as defaultInteractions, DoubleClickZoom} from 'ol/interaction'; 
+import {Select, defaults as defaultInteractions, DoubleClickZoom} from 'ol/interaction';
 import {click, pointerMove} from 'ol/events/condition.js';
 import { get } from 'ol/style/IconImage';
 
@@ -63,9 +63,9 @@ const pointStyleSelected = feature => {
 };
 const loadPoints = async (pointLayer) => {
   try {
-    const response = await fetch('http://localhost:5000/points');
+    const response = await fetch('http://localhost:3000/points');
     const points = await response.json();
-    
+
     points.forEach(point => {
       addPointToMap(pointLayer, point.id, point.name, point.coordinates);
     });
@@ -80,20 +80,20 @@ const addPointToMap = (layer, id, label, coordinate) => {
     pointFeature.set('label', label);
     pointFeature.set('id', id);
     layer.getSource().addFeature(pointFeature);
-  
+
 };
 const addPointToDataBase = async (name, coordinates) => {
   let lon =  coordinates[0];
   let lat = coordinates[1];
-  let request = JSON.stringify({ 
-    name: name, 
-    lon: coordinates[0], 
-    lat: coordinates[1] 
+  let request = JSON.stringify({
+    name: name,
+    lon: coordinates[0],
+    lat: coordinates[1]
   });
-  const response = await fetch("http://localhost:5000/add_point", {
+  const response = await fetch("http://localhost:3000/add_point", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: request 
+    body: request
   });
   if (!response.ok) {
     throw new Error("Failed to add point to database");
@@ -102,7 +102,7 @@ const addPointToDataBase = async (name, coordinates) => {
   return result.id;
 };
 const removePointFromDataBase = async (id) => {
-  const response = await fetch(`http://localhost:5000/points/${id}`, {
+  const response = await fetch(`http://localhost:3000/points/${id}`, {
     method: "DELETE",
   });
   if (!response.ok) return false;
@@ -116,7 +116,7 @@ const removeSelectedPointFromMap = () => {
       pointLayer.getSource().removeFeature(selectedFeature);
       console.log("ponto removido do Mapa");
       return id;
-    
+
     }
     return selectedFeature;
 }
