@@ -14,7 +14,6 @@ import {click, pointerMove} from 'ol/events/condition.js';
 import { get } from 'ol/style/IconImage';
 
 // 1. PONTOS
-
 const pointStyleNormal = feature => {
     const label = feature.get('label');
     return new Style({
@@ -109,17 +108,16 @@ const removePointFromDataBase = async (id) => {
   console.log("ponto removido da BD");
   return true;
 };
-const removeSelectedPointFromMap = () => {
-    let selectedFeature = selectClick.getFeatures().getArray()[0];
-    let id = selectedFeature.get('id');
-    if(selectedFeature) {
-      pointLayer.getSource().removeFeature(selectedFeature);
-      console.log("ponto removido do Mapa");
-      return id;
+const removeSelectedPointFromMap = async () => {
+  let selectedFeatures = selectClick.getFeatures().getArray();
+  if (selectedFeatures.length == 0) return null
+  let selectedFeature = selectedFeatures[0];
+  let id = selectedFeature.get('id');
+  await pointLayer.getSource().removeFeature(selectedFeature);
+  return id;
+};
 
-    }
-    return selectedFeature;
-}
+  
 
 //INTERACOES
 const interactions = defaultInteractions().getArray().filter((interaction) => !(interaction instanceof DoubleClickZoom));
@@ -152,12 +150,7 @@ const map = new Map({
 map.addInteraction(selectClick);
 
 //EVENTOS
-map.on('dblclick', (event) => {
-    const lonLat = toLonLat(event.coordinate);
-    const name = prompt('Point name: ');
-    const id = addPointToDataBase(name, lonLat);
-    addPointToMap(pointLayer, id, name, lonLat);
-});
+map.on('dblclick', (evt) => addPoint(evt));
 map.on('pointermove', (event) => {
   const pixel = event.pixel;
   const hit = map.hasFeatureAtPixel(pixel, {
@@ -165,12 +158,39 @@ map.on('pointermove', (event) => {
   });
   map.getTargetElement().style.cursor = hit ? 'pointer' : '';
 })
-document.addEventListener('keydown', (evt)=>{
-  if(evt.key != 'Delete') return;
-  console.log("delete");
-  let id = removeSelectedPointFromMap();
-  console.log("feature id: " + id);
-  if(id) removePointFromDataBase(id)
-}, false);
+document.addEventListener('keydown', (evt) => removePoint(evt), false);
 
 loadPoints(pointLayer);
+alert(`Adicionar um ponto : Double Click \n
+       Selecionar um ponto : Single Click \n
+       Eliminar um ponto : DELETE KEY
+`);
+function addPoint(evt){
+    const lonLat = toLonLat(evt.coordinate);
+    const name = prompt('Point name: ');
+    const id = addPointToDataBase(name, lonLat);
+    addPointToMap(pointLayer, id, name, lonLat);
+}
+async function removePoint(evt) {
+  if (evt.key !== 'Delete') return;
+  console.log("Delete");
+
+  const id = await removeSelectedPointFromMap();
+
+  if (!Number.isInteger(id)) {
+    console.log("Invalid id: " + id);
+    return;
+  }
+
+  console.log("feature id: " + id);
+
+  let pointRemoved = removePointFromDataBase(id);
+  
+  if (!pointRemoved) {
+    console.log("Não foi possível eliminar ponto da Base de dados");
+    // addPointToMap(pointLayer, id, selecte);
+    return;
+  }
+
+  console.log("Ponto eliminado");
+}

@@ -8,7 +8,6 @@ const RETRY_INTERVAL = 2000; // milliseconds
 
 let retryCount = 0;
 app.use(bodyParser.json());
-
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Start server
@@ -29,19 +28,6 @@ const pool = new Pool({
 });
 
 connectToDatabase();
-/*
- pool.connect((err, client, done) => {
-   if (err) {
-     console.error('Error connecting to the database:', err.stack);
-   } else {
-     console.log('Connected to the database :)');
-   }
-   done();
- });
-
-app.get('/', (req, res) => {
-  res.send('<H1>IM AM HERE TO SERVE YOU</H1>');
-});*/
 
 app.get("/points", async (req, res) => {
   try {

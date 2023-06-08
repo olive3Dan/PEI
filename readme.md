@@ -1,13 +1,15 @@
 # GeoServer
+1. Fazer Download e instalar o Docker: 
 
-To get started, run the following at the root of the project
+    https://docs.docker.com/desktop/install/windows-install/
 
+2. Abrir o terminal na root do projeto e digitar: 
+    
     docker compose up -d --build
-
-To shut down, run the following at the root of the project
+    
+3. Para desligar a App correr:
 
     docker compose down
-
 
 ### Project Structure  
 

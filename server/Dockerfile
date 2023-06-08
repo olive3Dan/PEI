@@ -4,7 +4,7 @@ WORKDIR /usr/server
 COPY server/package*.json ./
 COPY server/server.js ./
 
-RUN ["npm", "i", "production"]
+RUN ["npm", "i"]
 
 FROM node:current-alpine as build-and-run
 
